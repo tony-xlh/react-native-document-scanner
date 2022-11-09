@@ -1807,7 +1807,15 @@
   "resolved" "https://registry.npmmirror.com/@types/prop-types/-/prop-types-15.7.5.tgz"
   "version" "15.7.5"
 
-"@types/react-native@^0.70.6":
+"@types/react-native-simple-radio-button@^2.7.2":
+  "integrity" "sha512-iH/EBAtH2XznNvh+eCNeIl2c1fW5ZGGe6XC4qcNCiqO7oBHVQuyCTrtg+xEN3uxwxxYFb8EXa0hez1UqOKSJiw=="
+  "resolved" "https://registry.npmmirror.com/@types/react-native-simple-radio-button/-/react-native-simple-radio-button-2.7.2.tgz"
+  "version" "2.7.2"
+  dependencies:
+    "@types/react" "*"
+    "@types/react-native" "*"
+
+"@types/react-native@*", "@types/react-native@^0.70.6":
   "integrity" "sha512-ynQ2jj0km9d7dbnyKqVdQ6Nti7VQ8SLTA/KKkkS5+FnvGyvij2AOo1/xnkBR/jnSNXuzrvGVzw2n0VWfppmfKw=="
   "resolved" "https://registry.npmmirror.com/@types/react-native/-/react-native-0.70.6.tgz"
   "version" "0.70.6"
