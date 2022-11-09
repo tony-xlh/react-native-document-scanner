@@ -10,9 +10,13 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
+    "@react-navigation/native": "^6.0.13",
+    "@react-navigation/native-stack": "^6.9.1",
     "react": "18.1.0",
     "react-native": "0.70.5",
     "react-native-reanimated": "^2.12.0",
+    "react-native-safe-area-context": "^4.4.1",
+    "react-native-screens": "^3.18.2",
     "vision-camera-dynamsoft-document-normalizer": "^0.1.0"
   },
   "devDependencies": {
