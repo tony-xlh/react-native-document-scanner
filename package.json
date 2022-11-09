@@ -12,6 +12,7 @@
   "dependencies": {
     "react": "18.1.0",
     "react-native": "0.70.5",
+    "react-native-reanimated": "^2.12.0",
     "vision-camera-dynamsoft-document-normalizer": "^0.1.0"
   },
   "devDependencies": {
