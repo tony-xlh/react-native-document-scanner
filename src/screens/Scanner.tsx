@@ -156,7 +156,7 @@ export default function ScannerScreen({route, navigation}) {
     if (previousResults.current[0] && previousResults.current[1] && previousResults.current[2]) {
       let iou1 = intersectionOverUnion(previousResults.current[0].location.points,previousResults.current[1].location.points);
       let iou2 = intersectionOverUnion(previousResults.current[1].location.points,previousResults.current[2].location.points);
-      let iou3 = intersectionOverUnion(previousResults.current[2].location.points,previousResults.current[1].location.points);
+      let iou3 = intersectionOverUnion(previousResults.current[0].location.points,previousResults.current[2].location.points);
       console.log(iou1);
       console.log(iou2);
       console.log(iou3);
