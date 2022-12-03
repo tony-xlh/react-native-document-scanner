@@ -100,6 +100,10 @@ export default function ScannerScreen({route, navigation}) {
       console.log(photo);
       let rotated = false;
       if (platform.value === "android") {
+        if (photo.metadata.Orientation === 6) {
+          console.log("rotate bitmap for Android");
+          await DDN.rotateFile(photo.path,90);
+        }
         if (!(frameWidth.value>frameHeight.value && screenWidth.value>screenHeight.value)){
           rotated = true;
         }

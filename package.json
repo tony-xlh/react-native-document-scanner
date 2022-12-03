@@ -21,7 +21,7 @@
     "react-native-simple-radio-button": "^2.7.4",
     "react-native-svg": "^13.5.0",
     "react-native-vision-camera": "^2.15.2",
-    "vision-camera-dynamsoft-document-normalizer": "^0.1.0"
+    "vision-camera-dynamsoft-document-normalizer": "^0.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
