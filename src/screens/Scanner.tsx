@@ -10,6 +10,7 @@ import { intersectionOverUnion } from '../Utils';
 
 export default function ScannerScreen({route, navigation}) {
   const camera = useRef<Camera>(null)
+  const [isActive, setIsActive] = useState(true);
   const widthRatio = useRef(1);
   const heightRatio = useRef(1);
   const [hasPermission, setHasPermission] = useState(false);
@@ -97,6 +98,7 @@ export default function ScannerScreen({route, navigation}) {
       taken.value = true;
       console.log("using camera");
       const photo = await camera.current.takePhoto();
+      setIsActive(false);
       console.log(photo);
       let rotated = false;
       if (platform.value === "android") {
@@ -178,6 +180,7 @@ export default function ScannerScreen({route, navigation}) {
     previousResults.current = [];
     setPhotoPath(undefined);
     taken.value = false;
+    setIsActive(true)
   }
 
   const okay = () => {
@@ -224,7 +227,7 @@ export default function ScannerScreen({route, navigation}) {
             <Camera
               style={StyleSheet.absoluteFill}
               ref={camera}
-              isActive={true}
+              isActive={isActive}
               device={device}
               photo={true}
               frameProcessor={frameProcessor}
