@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Dimensions, Image, Platform, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Dimensions, Image, Platform, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Camera, useCameraDevices, useFrameProcessor } from 'react-native-vision-camera';
 import * as DDN from "vision-camera-dynamsoft-document-normalizer";
 import { Svg, Polygon } from 'react-native-svg';
@@ -30,8 +30,14 @@ export default function ScannerScreen({route, navigation}) {
     let viewBox = "";
     let rotated = false;
     if (platform.value === "android") {
-      if (!(frameWidth.value>frameHeight.value && screenWidth.value>screenHeight.value)){
-        rotated = true;
+      if (screenWidth.value>screenHeight.value) {
+        if (frameWidth.value<frameHeight.value) {
+          rotated = true;
+        }
+      }else{
+        if (frameWidth.value>frameHeight.value) {
+          rotated = true;
+        }
       }
     }
     if (rotated) {
@@ -100,38 +106,19 @@ export default function ScannerScreen({route, navigation}) {
       const photo = await camera.current.takePhoto();
       setIsActive(false);
       console.log(photo);
-      let rotated = false;
+      let photoWidth = photo.width;
+      let photoHeight = photo.height;
       if (platform.value === "android") {
         if (photo.metadata.Orientation === 6) {
           console.log("rotate bitmap for Android");
           await DDN.rotateFile(photo.path,90);
-        }
-        if (!(frameWidth.value>frameHeight.value && screenWidth.value>screenHeight.value)){
-          rotated = true;
-        }
-        if (rotated) {
-          widthRatio.current = frameHeight.value/photo.width;
-          heightRatio.current = frameWidth.value/photo.height;
-        } else {
-          widthRatio.current = frameWidth.value/photo.width;
-          heightRatio.current = frameHeight.value/photo.height;
-        }
-      } else {
-        console.log("ios");
-        let photoRotated = false;
-        if (!(photo.width>photo.height && screenWidth.value>screenHeight.value)){
-          photoRotated = true;
-        }
-        if (photoRotated) {
-          widthRatio.current = frameWidth.value/photo.height;
-          heightRatio.current = frameHeight.value/photo.width;
-        }else{
-          widthRatio.current = frameWidth.value/photo.width;
-          heightRatio.current = frameHeight.value/photo.height;
+          photoWidth = photo.height;
+          photoHeight = photo.width;
         }
       }
-      console.log("width ratio:"+widthRatio.current);
-      console.log("height ratio:"+heightRatio.current);
+      frameWidth.value = photoWidth;
+      frameHeight.value = photoHeight;
+      detectionResults.value = await DDN.detectFile(photo.path);
       setPhotoPath(photo.path);
       //setIsActive(false);
     }
@@ -185,38 +172,17 @@ export default function ScannerScreen({route, navigation}) {
 
   const okay = () => {
     console.log("okay");
-    let result = detectionResults.value[0];
-    if (result) {
-      result = scaleDetectionResult(result);
+    if (detectionResults.value.length === 0) {
+      Alert.alert("Error","No detected documents");
+      return;
     }
+    let result = detectionResults.value[0];
     navigation.navigate(
       {
         params: {photoPath:photoPath, detectionResult:result},
         name: "ResultViewer"
       }
     );
-  }
-
-  const scaleDetectionResult = (result:DetectedQuadResult):DetectedQuadResult =>  {
-    let points:[Point,Point,Point,Point] = [{x:0,y:0},{x:0,y:0},{x:0,y:0},{x:0,y:0}];
-    for (let index = 0; index < result.location.points.length; index++) {
-      const point = result.location.points[index];
-      if (point) {
-        let newPoint:Point = {
-          x:point.x / widthRatio.current,
-          y:point.y / heightRatio.current
-        };
-        points[index] = newPoint;
-      }
-    }
-    let quad:Quadrilateral = {
-      points: points
-    };
-    let newQuadResult:DetectedQuadResult = {
-      confidenceAsDocumentBoundary:result.confidenceAsDocumentBoundary,
-      location: quad
-    };
-    return newQuadResult;
   }
 
   return (
