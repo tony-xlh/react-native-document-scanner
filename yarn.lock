@@ -7549,10 +7549,10 @@
   "resolved" "https://registry.npmmirror.com/vary/-/vary-1.1.2.tgz"
   "version" "1.1.2"
 
-"vision-camera-dynamsoft-document-normalizer@^0.2.0":
-  "integrity" "sha512-4bf/d6AfOWqB68hRa7bDJ86gpNO5P6vK83OmO6miL6+Xme4q1M084RIMvEww6f2s1JTCNY7OjsKo9m6AV+YiJw=="
-  "resolved" "https://registry.npmjs.org/vision-camera-dynamsoft-document-normalizer/-/vision-camera-dynamsoft-document-normalizer-0.2.0.tgz"
-  "version" "0.2.0"
+"vision-camera-dynamsoft-document-normalizer@^0.3.0":
+  "integrity" "sha512-HylAJGDsPlHdF3Jd0d293BeDDp/FuUfNk2pPvtvfzWlTB1i/33MT+F5jyMIVYnHyILaaZLtJv5m4rJlTxP/xfw=="
+  "resolved" "https://registry.npmjs.org/vision-camera-dynamsoft-document-normalizer/-/vision-camera-dynamsoft-document-normalizer-0.3.0.tgz"
+  "version" "0.3.0"
 
 "vlq@^1.0.0":
   "integrity" "sha512-gQpnTgkubC6hQgdIcRdYGDSDc+SaujOdyesZQMv6JlfQee/9Mp0Qhnys6WxDWvQnL5WZdT7o2Ul187aSt0Rq+w=="
