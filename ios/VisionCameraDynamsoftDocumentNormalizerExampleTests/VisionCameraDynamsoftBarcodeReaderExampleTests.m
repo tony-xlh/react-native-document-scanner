@@ -7,11 +7,11 @@
 #define TIMEOUT_SECONDS 600
 #define TEXT_TO_LOOK_FOR @"Welcome to React"
 
-@interface DocumentScannerTests : XCTestCase
+@interface VisionCameraDynamsoftDocumentNormalizerExampleTests : XCTestCase
 
 @end
 
-@implementation DocumentScannerTests
+@implementation VisionCameraDynamsoftDocumentNormalizerExampleTests
 
 - (BOOL)findSubviewInView:(UIView *)view matching:(BOOL (^)(UIView *view))test
 {
