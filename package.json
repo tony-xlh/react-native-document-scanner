@@ -18,7 +18,7 @@
     "react-native-svg": "^13.4.0",
     "react-native-vision-camera": "^3.6.16",
     "react-native-worklets-core": "^0.2.4",
-    "vision-camera-dynamsoft-document-normalizer": "^1.0.0"
+    "vision-camera-dynamsoft-document-normalizer": "^2.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
