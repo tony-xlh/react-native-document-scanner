@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Alert, Dimensions, Platform, SafeAreaView, StyleSheet } from 'react-native';
-import { Camera, PhotoFile, useCameraDevice, useCameraDevices, useCameraFormat, useFrameProcessor } from 'react-native-vision-camera';
+import { Camera, PhotoFile, runAtTargetFps, useCameraDevice, useCameraDevices, useCameraFormat, useFrameProcessor } from 'react-native-vision-camera';
 import * as DDN from "vision-camera-dynamsoft-document-normalizer";
 import { Svg, Polygon } from 'react-native-svg';
 import type { DetectedQuadResult } from 'vision-camera-dynamsoft-document-normalizer';
@@ -167,15 +167,22 @@ export default function Scanner(props:ScannerProps) {
     console.log("detect frame");
     console.log(frame.toString());
     if (takenShared.value === false) {
-      const results = DDN.detect(frame);
-      console.log(results);
-      if (results.length>0) {
-        frameWidth.value = frame.width;
-        frameHeight.value = frame.height;
-        detectionResults.value = results;
-        updateViewBoxJS();
-        updatePointsDataJS();
-      }
+      runAtTargetFps(3, () => {
+        'worklet'
+        try {
+          const results = DDN.detect(frame);
+          console.log(results);
+          if (results.length>0) {
+            frameWidth.value = frame.width;
+            frameHeight.value = frame.height;
+            detectionResults.value = results;
+            updateViewBoxJS();
+            updatePointsDataJS();
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      })
     }
   }, [])
 
