@@ -3516,11 +3516,6 @@ fs.realpath@^1.0.0:
   resolved "https://registry.npmmirror.com/fs.realpath/-/fs.realpath-1.0.0.tgz"
   integrity sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==
 
-fsevents@^2.3.2:
-  version "2.3.3"
-  resolved "https://registry.npmmirror.com/fsevents/-/fsevents-2.3.3.tgz"
-  integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
-
 function-bind@^1.1.1, function-bind@^1.1.2:
   version "1.1.2"
   resolved "https://registry.npmmirror.com/function-bind/-/function-bind-1.1.2.tgz"
@@ -5625,10 +5620,10 @@ react-native-svg@^13.4.0:
     css-select "^5.1.0"
     css-tree "^1.1.3"
 
-react-native-vision-camera@*, react-native-vision-camera@^3.6.16:
-  version "3.6.16"
-  resolved "https://registry.npmmirror.com/react-native-vision-camera/-/react-native-vision-camera-3.6.16.tgz"
-  integrity sha512-MyQ9uFNJhfQBBrZwV44ok2iviqjXpSDUYZfXkSadbsrCYjn6/7bQFaNT8GZfT8KBX+cruaO7Zu2EoZ8v2ZMCaA==
+react-native-vision-camera@*, react-native-vision-camera@^3.9.0:
+  version "3.9.0"
+  resolved "https://registry.npmmirror.com/react-native-vision-camera/-/react-native-vision-camera-3.9.0.tgz"
+  integrity sha512-q0HejFTS56s5DXWHZhlWLLZMKn/8OXALrqET+FySPIKskwYEdJ5rOV2aDlD6hlo67qCNFGUIMZWGFFc9L2os1g==
 
 react-native-worklets-core@*, react-native-worklets-core@^0.2.4:
   version "0.2.4"
@@ -6591,10 +6586,10 @@ vary@~1.1.2:
   resolved "https://registry.npmmirror.com/vary/-/vary-1.1.2.tgz"
   integrity sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==
 
-vision-camera-dynamsoft-document-normalizer@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.npmjs.org/vision-camera-dynamsoft-document-normalizer/-/vision-camera-dynamsoft-document-normalizer-2.0.0.tgz"
-  integrity sha512-NZxa8p5E4zbfOrzkjx0fSzc7GSIDlJSotRMRynk0/fuiGR5BBbHdkV8caY1GBPj3kiNeQcqq1GcWBDM4hESAgg==
+vision-camera-dynamsoft-document-normalizer@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.npmmirror.com/vision-camera-dynamsoft-document-normalizer/-/vision-camera-dynamsoft-document-normalizer-2.1.0.tgz"
+  integrity sha512-Q6Nm7ursfXbhF/lG+OMjnUXHdP8a8WmNIG2LH9yFod/aJxGW8BgZrE9OS0YzKve8ttzGwCkQ05xgh/IoZcslsg==
 
 vlq@^1.0.0:
   version "1.0.1"
