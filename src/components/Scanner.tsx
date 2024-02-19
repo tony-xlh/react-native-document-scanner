@@ -165,7 +165,7 @@ export default function Scanner(props:ScannerProps) {
   const frameProcessor = useFrameProcessor((frame) => {
     'worklet'
     console.log("detect frame");
-    console.log(frame);
+    console.log(frame.toString());
     if (takenShared.value === false) {
       const results = DDN.detect(frame);
       console.log(results);
