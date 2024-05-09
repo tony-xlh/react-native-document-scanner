@@ -16,7 +16,16 @@ export default function Scanner(props:ScannerProps) {
   const camera = useRef<Camera|null>(null)
   const [isActive,setIsActive] = useState(true);
   const [hasPermission, setHasPermission] = useState(false);
-  const detectionResults = useSharedValue([] as DetectedQuadResult[]);
+  const [detectionResults,setDetectionResults] = useState([] as DetectedQuadResult[]);
+  const convertAndSetResults = (records:Record<string,DetectedQuadResult>) => {
+    let results:DetectedQuadResult[] = [];
+    for (let index = 0; index < Object.keys(records).length; index++) {
+      const result = records[Object.keys(records)[index]];
+      results.push(result);
+    }
+    setDetectionResults(results);
+  }
+  const convertAndSetResultsJS = Worklets.createRunOnJS(convertAndSetResults);
   const frameWidth = useSharedValue(1920);
   const frameHeight = useSharedValue(1080);
   const [viewBox,setViewBox] = useState("0 0 1080 1920");
@@ -43,6 +52,11 @@ export default function Scanner(props:ScannerProps) {
     })();
   }, []);
 
+  useEffect(() => {
+    updateViewBox();
+    updatePointsData();
+  }, [detectionResults]);
+
   const getFrameSize = () => {
     let width, height;
     if (Platform.OS === 'android') {
@@ -67,10 +81,9 @@ export default function Scanner(props:ScannerProps) {
     console.log("viewBox"+viewBox);
   }
 
-  const updateViewBoxJS = Worklets.createRunInJsFn(updateViewBox);
   const updatePointsData = () => {
-    if (detectionResults.value.length>0) {
-      let result = detectionResults.value[0];
+    if (detectionResults.length>0) {
+      let result = detectionResults[0];
       if (result) {
         let location = result.location;
         let pointsData = location.points[0].x + "," + location.points[0].y + " ";
@@ -81,8 +94,6 @@ export default function Scanner(props:ScannerProps) {
       }
     }
   }
-
-  const updatePointsDataJS = Worklets.createRunInJsFn(updatePointsData);
   
   useEffect(() => {
     if (pointsText != "default") {
@@ -122,10 +133,10 @@ export default function Scanner(props:ScannerProps) {
   }
 
   const checkIfSteady = async () => {
-    if (detectionResults.value.length == 0) {
+    if (detectionResults.length == 0) {
       return;
     }
-    let result = detectionResults.value[0];
+    let result = detectionResults[0];
     console.log("previousResults");
     console.log(previousResults);
     if (result) {
@@ -172,12 +183,10 @@ export default function Scanner(props:ScannerProps) {
         try {
           const results = DDN.detect(frame);
           console.log(results);
-          if (results.length>0) {
+          if (Object.keys(results).length>0) {
             frameWidth.value = frame.width;
             frameHeight.value = frame.height;
-            detectionResults.value = results;
-            updateViewBoxJS();
-            updatePointsDataJS();
+            convertAndSetResultsJS(results);
           }
         } catch (error) {
           console.log(error);

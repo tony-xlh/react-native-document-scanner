@@ -16,9 +16,9 @@
     "react-native-share": "^8.0.0",
     "react-native-simple-radio-button": "^2.7.4",
     "react-native-svg": "^13.4.0",
-    "react-native-vision-camera": "^3.9.0",
-    "react-native-worklets-core": "^0.2.4",
-    "vision-camera-dynamsoft-document-normalizer": "^2.2.0"
+    "react-native-vision-camera": "^4.0.3",
+    "react-native-worklets-core": "^1.1.1",
+    "vision-camera-dynamsoft-document-normalizer": "^3.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

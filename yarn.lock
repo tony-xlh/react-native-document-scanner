@@ -3516,11 +3516,6 @@ fs.realpath@^1.0.0:
   resolved "https://registry.npmmirror.com/fs.realpath/-/fs.realpath-1.0.0.tgz"
   integrity sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==
 
-fsevents@^2.3.2:
-  version "2.3.3"
-  resolved "https://registry.npmmirror.com/fsevents/-/fsevents-2.3.3.tgz"
-  integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
-
 function-bind@^1.1.1, function-bind@^1.1.2:
   version "1.1.2"
   resolved "https://registry.npmmirror.com/function-bind/-/function-bind-1.1.2.tgz"
@@ -5625,15 +5620,15 @@ react-native-svg@^13.4.0:
     css-select "^5.1.0"
     css-tree "^1.1.3"
 
-react-native-vision-camera@*, react-native-vision-camera@^3.9.0:
-  version "3.9.0"
-  resolved "https://registry.npmmirror.com/react-native-vision-camera/-/react-native-vision-camera-3.9.0.tgz"
-  integrity sha512-q0HejFTS56s5DXWHZhlWLLZMKn/8OXALrqET+FySPIKskwYEdJ5rOV2aDlD6hlo67qCNFGUIMZWGFFc9L2os1g==
+react-native-vision-camera@*, react-native-vision-camera@^4.0.3:
+  version "4.0.3"
+  resolved "https://registry.npmmirror.com/react-native-vision-camera/-/react-native-vision-camera-4.0.3.tgz"
+  integrity sha512-scDSSVtd5OVMJrwhio/TcBw+h33XssJM+ANv3sdw7pH8dNQPRsHO1J32f0F/AAhudfdwffv7kAHB0Efe4nUl7g==
 
-react-native-worklets-core@*, react-native-worklets-core@^0.2.4:
-  version "0.2.4"
-  resolved "https://registry.npmmirror.com/react-native-worklets-core/-/react-native-worklets-core-0.2.4.tgz"
-  integrity sha512-NKqxLRDOYfO7RJRZHHDA/1yztdiSadSTTILgHw2VwSrcQcmnWAZGXWr9EYpzKblpbk/vXfJa6QpWIKHjNrbe4w==
+react-native-worklets-core@*, react-native-worklets-core@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.npmmirror.com/react-native-worklets-core/-/react-native-worklets-core-1.1.1.tgz"
+  integrity sha512-mcZl5dDRJo+VI23HS6fPExr8YOW2fpxk+EtY1FIt81SyKt5FBHl97sSmdEjAOLKOb9myW6IiG5DWL8WQJ0iCWg==
   dependencies:
     string-hash-64 "^1.0.3"
 
@@ -6591,10 +6586,10 @@ vary@~1.1.2:
   resolved "https://registry.npmmirror.com/vary/-/vary-1.1.2.tgz"
   integrity sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==
 
-vision-camera-dynamsoft-document-normalizer@^2.2.0:
-  version "2.2.0"
-  resolved "https://registry.npmjs.org/vision-camera-dynamsoft-document-normalizer/-/vision-camera-dynamsoft-document-normalizer-2.2.0.tgz"
-  integrity sha512-7tPC/uP73s0C1YbjFzvAPqZ0cM6d7fazmddLDqsYtNXVF7uIi3BbusfO9W5ZzRn17yLVQUUt0/EiJWV10HbZsg==
+vision-camera-dynamsoft-document-normalizer@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.npmjs.org/vision-camera-dynamsoft-document-normalizer/-/vision-camera-dynamsoft-document-normalizer-3.1.0.tgz"
+  integrity sha512-9rDEk05ZbeP1ZH7xxED7dDvDqAFeEoQLIk5Q3dPTOsy7jZaWKYx0Ow4X2K4tyZx2jDhvE0FKV1oS6UIhzGupIw==
 
 vlq@^1.0.0:
   version "1.0.1"
