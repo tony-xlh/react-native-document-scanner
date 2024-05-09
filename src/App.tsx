@@ -2,9 +2,10 @@ import * as React from 'react';
 import { Alert, SafeAreaView, StyleSheet, Text, TouchableOpacity } from "react-native";
 import Scanner from './components/Scanner';
 import type { PhotoFile } from 'react-native-vision-camera';
-import type * as DDN from "vision-camera-dynamsoft-document-normalizer";
+import * as DDN from "vision-camera-dynamsoft-document-normalizer";
 import Cropper from './components/Cropper';
 import ResultViewer from './components/ResultViewer';
+import { useEffect } from 'react';
 
 
 export default function App() {
@@ -15,8 +16,28 @@ export default function App() {
   const [photoPath,setPhotoPath] = React.useState<string>("");
   const [isWhiteBackgroundEnabled,setIsWhiteBackgroundEnabled] = React.useState(false);
   const [points,setPoints] = React.useState<DDN.Point[]>([]);
+  const [status,setStatus] = React.useState<string>("Initializing...");
+
+  useEffect(() => {
+    (async () => {
+      let license = "DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ=="; //one-day public trial
+      let result = await DDN.initLicense(license);
+      console.log("Licesne valid: ");
+      console.log(result);
+      if (result === false) {
+        Alert.alert("DDN","License invalid");
+      }else{
+        setStatus("");
+      }
+    })();
+  }, []);
+  
   const onPressed = () => {
-    setShowScanner(true);
+    if (status === "Initializing...") {
+      Alert.alert("DDN","Please wait for the initialization.");
+    }else{
+      setShowScanner(true);
+    }
   }
 
   const onScanned = (photo:PhotoFile|null,enabled:boolean) => {
@@ -63,12 +84,15 @@ export default function App() {
       )
     }else{
       return (
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => onPressed()}
-        >
-          <Text style={styles.buttonText}>Scan Document</Text>
-        </TouchableOpacity>
+        <>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => onPressed()}
+          >
+            <Text style={styles.buttonText}>Scan Document</Text>
+          </TouchableOpacity>
+          <Text>{status}</Text>
+        </>
         )
     }
   }
