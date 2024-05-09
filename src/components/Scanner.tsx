@@ -99,6 +99,8 @@ export default function Scanner(props:ScannerProps) {
         pointsData = pointsData + location.points[3].x + "," + location.points[3].y;
         setPointsText(pointsData);
       }
+    }else{
+      setPointsText("default");
     }
   }
   
@@ -116,7 +118,7 @@ export default function Scanner(props:ScannerProps) {
       console.log("using camera");
       setTaken(true);
       takenShared.value = true;
-      await sleep(1000);
+      await sleep(100);
       photo.current = await camera.current.takePhoto();
       if (photo.current) {
         console.log(photo.current);
@@ -192,11 +194,9 @@ export default function Scanner(props:ScannerProps) {
           console.log("template: "+template);
           const results = DDN.detect(frame,template);
           console.log(results);
-          if (Object.keys(results).length>0) {
-            frameWidth.value = frame.width;
-            frameHeight.value = frame.height;
-            convertAndSetResultsJS(results);
-          }
+          frameWidth.value = frame.width;
+          frameHeight.value = frame.height;
+          convertAndSetResultsJS(results);
         } catch (error) {
           console.log(error);
         }
