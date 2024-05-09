@@ -7,6 +7,7 @@ import type { PhotoFile } from "react-native-vision-camera";
 
 export interface CropperProps{
   photo:PhotoFile|undefined;
+  isWhiteBackgroundEnabled:boolean;
   onCanceled?: () => void;
   onConfirmed?: (photoPath:string,points:DDN.Point[]) => void;
 }
@@ -53,7 +54,9 @@ export default function Cropper(props:CropperProps) {
   }
 
   const detectFile = async (path:string) => {
-    let results = await DDN.detectFile(path);
+    let template = props.isWhiteBackgroundEnabled ? "Detect_HSV":"";
+    console.log("template: "+template);
+    let results = await DDN.detectFile(path,template);
     if (results.length>0 && results[0]) {
       pointsRef.current = results[0].location.points;
       updatePointsData();

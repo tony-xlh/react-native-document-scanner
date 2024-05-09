@@ -13,14 +13,16 @@ export default function App() {
   const [showResultViewer,setShowResultViewer] = React.useState(false);
   const [photoTaken,setPhotoTaken] = React.useState<PhotoFile|undefined>();
   const [photoPath,setPhotoPath] = React.useState<string>("");
+  const [isWhiteBackgroundEnabled,setIsWhiteBackgroundEnabled] = React.useState(false);
   const [points,setPoints] = React.useState<DDN.Point[]>([]);
   const onPressed = () => {
     setShowScanner(true);
   }
 
-  const onScanned = (photo:PhotoFile|null) => {
+  const onScanned = (photo:PhotoFile|null,enabled:boolean) => {
     if (photo) {
       setShowScanner(false);
+      setIsWhiteBackgroundEnabled(enabled);
       setPhotoTaken(photo);
       setShowCropper(true);
     }else{
@@ -38,6 +40,7 @@ export default function App() {
       return (
         <Cropper 
           photo={photoTaken}
+          isWhiteBackgroundEnabled={isWhiteBackgroundEnabled}
           onCanceled={()=>{
             setShowCropper(false);
             setShowScanner(true);

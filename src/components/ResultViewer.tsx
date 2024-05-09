@@ -57,6 +57,7 @@ export default function ResultViewer(props:ResultViewerProps) {
       let points = props.points;
       let detectionResult:DetectedQuadResult = {
         confidenceAsDocumentBoundary:90,
+        area:0,
         location:{
           points:[points[0]!,points[1]!,points[2]!,points[3]!]
         }
