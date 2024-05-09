@@ -6,19 +6,25 @@ import { Svg, Polygon } from 'react-native-svg';
 import type { DetectedQuadResult } from 'vision-camera-dynamsoft-document-normalizer';
 import { useEffect, useRef, useState } from 'react';
 import { Worklets,useSharedValue } from 'react-native-worklets-core';
-import { intersectionOverUnion, sleep } from '../Utils';
+import { getRectFromPoints, intersectionOverUnion, sleep } from '../Utils';
 
 export interface ScannerProps{
-    onScanned?: (path:PhotoFile|null,isWhiteBackgroundEnabled:boolean) => void;
-  }
+  onScanned?: (path:PhotoFile|null,isWhiteBackgroundEnabled:boolean) => void;
+}
   
 export default function Scanner(props:ScannerProps) {
   const [isWhiteBackgroundEnabled, setIsWhiteBackgroundEnabled] = useState(false);
+  const [isAutoSwitchingEnabled, setIsAutoSwitchingEnabled] = useState(false);
   const isWhiteBackgroundEnabledShared = useSharedValue(false);
   const toggleSwitch = () => {
+    failedTimes.current = 0;
     isWhiteBackgroundEnabledShared.value = (!isWhiteBackgroundEnabled);
     setIsWhiteBackgroundEnabled(previousState => !previousState)
   };
+  const toggleTemplateSwitch = () => {
+    setIsAutoSwitchingEnabled(previousState => !previousState)
+  }
+  const failedTimes = useRef(0);
   const camera = useRef<Camera|null>(null)
   const [isActive,setIsActive] = useState(true);
   const [hasPermission, setHasPermission] = useState(false);
@@ -56,6 +62,25 @@ export default function Scanner(props:ScannerProps) {
   useEffect(() => {
     updateViewBox();
     updatePointsData();
+    if (isAutoSwitchingEnabled) {
+      let threshold = 3;
+      if (detectionResults.length == 0) {
+        threshold = 8;
+      }
+      if (failedTimes.current>threshold) {
+        toggleSwitch();
+        return;
+      }
+      if (detectionResults.length == 0) {
+        failedTimes.current = failedTimes.current + 1;
+      }else{
+        checkIfSteady();
+      }
+    }else{
+      if (detectionResults.length > 0) {
+        checkIfSteady();
+      }
+    }
   }, [detectionResults]);
 
   const getFrameSize = () => {
@@ -97,13 +122,6 @@ export default function Scanner(props:ScannerProps) {
       setPointsText("default");
     }
   }
-  
-  useEffect(() => {
-    if (pointsText != "default") {
-      console.log("pointsText changed");
-      checkIfSteady();
-    }
-  }, [pointsText]);
 
 
   const takePhoto = async () => {
@@ -136,9 +154,6 @@ export default function Scanner(props:ScannerProps) {
   }
 
   const checkIfSteady = async () => {
-    if (detectionResults.length == 0) {
-      return;
-    }
     let result = detectionResults[0];
     console.log("previousResults");
     console.log(previousResults);
@@ -146,6 +161,14 @@ export default function Scanner(props:ScannerProps) {
       if (previousResults.current.length >= 2) {
         previousResults.current.push(result);
         if (steady() == true) {
+          if (isAutoSwitchingEnabled) {
+            if (!bigEnough(result)) {
+              failedTimes.current = failedTimes.current + 1;
+              console.log("shift result");
+              previousResults.current.shift();
+              return;
+            }
+          }
           await takePhoto();
           console.log("steady");
         }else{
@@ -159,14 +182,31 @@ export default function Scanner(props:ScannerProps) {
     }
   }
 
+  const bigEnough = (quad:DetectedQuadResult) => {
+    const frameSize = getFrameSize();
+    const width:number = frameSize[0].value;
+    const height:number = frameSize[1].value;
+    const rect = getRectFromPoints(quad.location.points);
+    console.log("width: "+width);
+    console.log("height: "+height);
+    console.log("width percent:"+rect.width/width);
+    console.log("height percent:"+rect.height/height);
+    console.log("white enabled:"+isWhiteBackgroundEnabled);
+    if (rect.width/width>0.5 && rect.height/height>0.3) {
+      return true;
+    }else{
+      return false;
+    }
+  }
+
   const steady = () => {
     if (previousResults.current[0] && previousResults.current[1] && previousResults.current[2]) {
       let iou1 = intersectionOverUnion(previousResults.current[0].location.points,previousResults.current[1].location.points);
       let iou2 = intersectionOverUnion(previousResults.current[1].location.points,previousResults.current[2].location.points);
       let iou3 = intersectionOverUnion(previousResults.current[0].location.points,previousResults.current[2].location.points);
-      console.log(iou1);
-      console.log(iou2);
-      console.log(iou3);
+      //console.log(iou1);
+      //console.log(iou2);
+      //console.log(iou3);
       if (iou1>0.9 && iou2>0.9 && iou3>0.9) {
         return true;
       }else{
@@ -225,14 +265,26 @@ export default function Scanner(props:ScannerProps) {
               )}
             </Svg>
             <View style={styles.control}>
-              <Text>Enable White Background Template:</Text>
-              <Switch
-                trackColor={{false: '#767577', true: '#81b0ff'}}
-                thumbColor={isWhiteBackgroundEnabled ? '#f5dd4b' : '#f4f3f4'}
-                ios_backgroundColor="#3e3e3e"
-                onValueChange={toggleSwitch}
-                value={isWhiteBackgroundEnabled}
-              />
+              <View style={styles.switch}>
+                <Text>Enable White Background Template:</Text>
+                <Switch
+                  trackColor={{false: '#767577', true: '#81b0ff'}}
+                  thumbColor={isWhiteBackgroundEnabled ? '#f5dd4b' : '#f4f3f4'}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={toggleSwitch}
+                  value={isWhiteBackgroundEnabled}
+                />
+              </View>
+              <View style={styles.switch}>
+                <Text>Enable Auto Template Switching:</Text>
+                <Switch
+                  trackColor={{false: '#767577', true: '#81b0ff'}}
+                  thumbColor={isAutoSwitchingEnabled ? '#f5dd4b' : '#f4f3f4'}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={toggleTemplateSwitch}
+                  value={isAutoSwitchingEnabled}
+                />
+              </View>
             </View>
         </>)}
       </SafeAreaView>
@@ -244,13 +296,17 @@ const styles = StyleSheet.create({
     flex: 1
   },
   control:{
-    flexDirection:"row",
+    flexDirection:"column",
     position: 'absolute',
     bottom: 0,
     height: 100,
     width:"100%",
-    alignSelf:"flex-start",
-    alignItems: 'center',
+    justifyContent:'center',
+    alignItems:'center',
     backgroundColor:'rgba(255, 255, 255, 0.5)',
+  },
+  switch:{
+    flexDirection:"row",
+    alignSelf:"flex-start",
   },
 });

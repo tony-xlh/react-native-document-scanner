@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Dimensions, GestureResponderEvent, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import { Alert, Dimensions, GestureResponderEvent, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import * as DDN from "vision-camera-dynamsoft-document-normalizer";
 import type { Point } from "vision-camera-dynamsoft-document-normalizer";
 import Svg, { Polygon, Rect } from "react-native-svg";
@@ -24,9 +24,9 @@ export default function Cropper(props:CropperProps) {
   useEffect(() => {
     if (props.photo) {
       let photo:PhotoFile = props.photo;
+      detectFile(photo.path);
       setPhotoPath(photo.path);
       updateViewBox(photo);
-      detectFile(photo.path);
     }
   }, []);
 
@@ -49,7 +49,6 @@ export default function Cropper(props:CropperProps) {
     }else{
       viewBoxValue = "0 0 "+photo.width+" "+photo.height;
     }
-
     setViewBox(viewBoxValue);
   }
 
@@ -60,6 +59,8 @@ export default function Cropper(props:CropperProps) {
     if (results.length>0 && results[0]) {
       pointsRef.current = results[0].location.points;
       updatePointsData();
+    }else{
+      Alert.alert("DDN","Failed to detect boundary. Please retake.");
     }
   }
 
