@@ -28,7 +28,7 @@ function rectIntersectionOverUnion(rect1:Rect, rect2:Rect) : number {
   return sCross/(s1+s2-sCross);
 }
 
-function getRectFromPoints(points:Point[]) : Rect {
+export function getRectFromPoints(points:Point[]) : Rect {
   if (points[0]) {
     let left:number;
     let top:number;

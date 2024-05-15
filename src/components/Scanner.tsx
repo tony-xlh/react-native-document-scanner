@@ -6,7 +6,7 @@ import { Svg, Polygon } from 'react-native-svg';
 import type { DetectedQuadResult } from 'vision-camera-dynamsoft-document-normalizer';
 import { useEffect, useRef, useState } from 'react';
 import { Worklets,useSharedValue } from 'react-native-worklets-core';
-import { intersectionOverUnion, sleep } from '../Utils';
+import { intersectionOverUnion, sleep, getRectFromPoints } from '../Utils';
 import { defaultTemplate, whiteTemplate } from '../Templates';
 
 export interface ScannerProps{
@@ -28,7 +28,10 @@ export default function Scanner(props:ScannerProps) {
     let results:DetectedQuadResult[] = [];
     for (let index = 0; index < Object.keys(records).length; index++) {
       const result = records[Object.keys(records)[index]];
-      results.push(result);
+      const rect = getRectFromPoints(result.location.points);
+      if (rect.width / getFrameSize()[0].value < 0.95) { //avoid full screen misdetection
+        results.push(result);
+      }
     }
     setDetectionResults(results);
   }
