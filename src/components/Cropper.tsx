@@ -8,6 +8,9 @@ import type { PhotoFile } from "react-native-vision-camera";
 export interface CropperProps{
   photo:PhotoFile|undefined;
   isWhiteBackgroundEnabled:boolean;
+  liveDetectedQuad:DDN.DetectedQuadResult|undefined;
+  frameWidth:number|undefined;
+  frameHeight:number|undefined;
   onCanceled?: () => void;
   onConfirmed?: (photoPath:string,points:DDN.Point[]) => void;
 }
@@ -54,6 +57,27 @@ export default function Cropper(props:CropperProps) {
   }
 
   const detectFile = async (path:string) => {
+    if (props.frameWidth && props.frameHeight && props.liveDetectedQuad) {
+      if (props.photo) {
+        if (props.frameWidth/props.frameHeight == props.photo.width/props.photo.height) {
+          //console.log(props);
+          console.log("use live detection result");
+          let points = JSON.parse(JSON.stringify(props.liveDetectedQuad.location.points));
+          console.log("points:");
+          console.log(points);
+          for (let index = 0; index < points.length; index++) {
+            const point = points[index];
+            point.x = Math.ceil(point.x / (props.frameWidth / props.photo.width));
+            point.y = Math.ceil(point.y / (props.frameHeight / props.photo.height));
+            point.x = Math.min(props.photo.width,point.x);
+            point.y = Math.min(props.photo.height,point.y);
+          }
+          pointsRef.current = points;
+          updatePointsData();
+          return;
+        }
+      }
+    }
     let results = await DDN.detectFile(path);
     if (results.length>0 && results[0]) {
       pointsRef.current = results[0].location.points;

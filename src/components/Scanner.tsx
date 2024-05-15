@@ -10,7 +10,7 @@ import { intersectionOverUnion, sleep } from '../Utils';
 import { defaultTemplate, whiteTemplate } from '../Templates';
 
 export interface ScannerProps{
-    onScanned?: (path:PhotoFile|null,isWhiteBackgroundEnabled:boolean) => void;
+    onScanned?: (path:PhotoFile|null,isWhiteBackgroundEnabled:boolean,detectionResult:DetectedQuadResult,frameWidth:number,frameHeight:number) => void;
   }
   
 export default function Scanner(props:ScannerProps) {
@@ -44,6 +44,8 @@ export default function Scanner(props:ScannerProps) {
   const device = useCameraDevice("back");
   const cameraFormat = useCameraFormat(device, [
     { videoResolution: { width: 1280, height: 720 } },
+    {photoAspectRatio: 16/9 },
+    {videoAspectRatio: 16/9 },
     { fps: 60 }
   ])
   useEffect(() => {
@@ -137,7 +139,13 @@ export default function Scanner(props:ScannerProps) {
         }
         if (props.onScanned) {
           console.log(photo.current);
-          props.onScanned(photo.current,isWhiteBackgroundEnabled);
+          props.onScanned(
+            photo.current,
+            isWhiteBackgroundEnabled,
+            detectionResults[0],
+            getFrameSize()[0].value,
+            getFrameSize()[1].value
+          );
         }
       }else{
         Alert.alert("","Failed to take a photo");

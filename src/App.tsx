@@ -14,6 +14,9 @@ export default function App() {
   const [showResultViewer,setShowResultViewer] = React.useState(false);
   const [photoTaken,setPhotoTaken] = React.useState<PhotoFile|undefined>();
   const [photoPath,setPhotoPath] = React.useState<string>("");
+  const [frameWidth,setFrameWidth] = React.useState<number|undefined>();
+  const [frameHeight,setFrameHeight] = React.useState<number|undefined>();
+  const [detectedQuad,setDetectedQuad] = React.useState<DDN.DetectedQuadResult|undefined>();
   const [isWhiteBackgroundEnabled,setIsWhiteBackgroundEnabled] = React.useState(false);
   const [points,setPoints] = React.useState<DDN.Point[]>([]);
   const [status,setStatus] = React.useState<string>("Initializing...");
@@ -40,10 +43,13 @@ export default function App() {
     }
   }
 
-  const onScanned = (photo:PhotoFile|null,enabled:boolean) => {
+  const onScanned = (photo:PhotoFile|null,enabled:boolean,detectedQuad:DDN.DetectedQuadResult,frameWidth:number,frameHeight:number) => {
     if (photo) {
       setShowScanner(false);
       setIsWhiteBackgroundEnabled(enabled);
+      setDetectedQuad(detectedQuad);
+      setFrameWidth(frameWidth);
+      setFrameHeight(frameHeight);
       setPhotoTaken(photo);
       setShowCropper(true);
     }else{
@@ -62,6 +68,9 @@ export default function App() {
         <Cropper 
           photo={photoTaken}
           isWhiteBackgroundEnabled={isWhiteBackgroundEnabled}
+          liveDetectedQuad={detectedQuad}
+          frameWidth={frameWidth}
+          frameHeight={frameHeight}
           onCanceled={()=>{
             setShowCropper(false);
             setShowScanner(true);
