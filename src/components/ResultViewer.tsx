@@ -4,6 +4,7 @@ import RadioForm from 'react-native-simple-radio-button';
 import * as DDN from "vision-camera-dynamsoft-document-normalizer";
 import type { DetectedQuadResult } from "vision-camera-dynamsoft-document-normalizer";
 import Share, { ShareOptions } from 'react-native-share';
+import { defaultTemplate } from "../Templates";
 
 const radio_props = [
   {label: 'Binary', value: 0 },
@@ -53,6 +54,7 @@ export default function ResultViewer(props:ResultViewerProps) {
       } else {
         templateName = "NormalizeDocument_Color";
       }
+      await DDN.initRuntimeSettingsFromString(defaultTemplate);
       console.log("update settings done");
       let points = props.points;
       let detectionResult:DetectedQuadResult = {

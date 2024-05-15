@@ -54,9 +54,7 @@ export default function Cropper(props:CropperProps) {
   }
 
   const detectFile = async (path:string) => {
-    let template = props.isWhiteBackgroundEnabled ? "Detect_HSV":"";
-    console.log("template: "+template);
-    let results = await DDN.detectFile(path,template);
+    let results = await DDN.detectFile(path);
     if (results.length>0 && results[0]) {
       pointsRef.current = results[0].location.points;
       updatePointsData();
