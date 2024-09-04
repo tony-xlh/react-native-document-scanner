@@ -77,18 +77,13 @@ export default function Scanner(props:ScannerProps) {
 
   const getFrameSize = () => {
     let width, height;
-    if (Platform.OS === 'android') {
-      if (frameWidth>frameHeight && Dimensions.get('window').width>Dimensions.get('window').height){
-        width = frameWidth;
-        height = frameHeight;
-      }else {
-        console.log("Has rotation");
-        width = frameHeight;
-        height = frameWidth;
-      }
-    } else {
+    if (frameWidth>frameHeight && Dimensions.get('window').width>Dimensions.get('window').height){
       width = frameWidth;
       height = frameHeight;
+    }else {
+      console.log("Has rotation");
+      width = frameHeight;
+      height = frameWidth;
     }
     return [width, height];
   }
@@ -231,7 +226,7 @@ export default function Scanner(props:ScannerProps) {
               device={device}
               photo={true}
               format={cameraFormat}
-              frameProcessor={taken ? undefined: frameProcessor}
+              frameProcessor={frameProcessor}
               pixelFormat='yuv'
             />
             <Svg preserveAspectRatio='xMidYMid slice' style={StyleSheet.absoluteFill} viewBox={viewBox}>
