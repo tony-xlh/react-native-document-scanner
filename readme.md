@@ -11,3 +11,7 @@ Check out the `vision-camera-v2` branch if you need to use vision camera v2.
 1. npm install
 2. cd `ios` and run `pod install`
 3. npx react-native run-android or run-ios
+
+### Blog
+
+[Build a React Native Document Scanner](https://www.dynamsoft.com/codepool/react-native-document-scanner.html)
