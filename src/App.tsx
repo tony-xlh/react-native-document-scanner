@@ -23,7 +23,7 @@ export default function App() {
 
   useEffect(() => {
     (async () => {
-      let license = "DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ=="; //one-day public trial
+      let license = "t0086pwAAAIXUXzab0LCKbi/v4LuBwfy7IJ8yJU0X54XRoYUDqCCmC2YZ65tdS9hU2g9ZbA7QyRbf2nDVkffHtrpF8K0+CfGkx0rulHmPEncZajjlBS3sIr4="; //one-day public trial
       let result = await DDN.initLicense(license);
       console.log("Licesne valid: ");
       console.log(result);

@@ -1,30 +1,19 @@
 import * as React from 'react';
 import { Alert, Dimensions, Platform, SafeAreaView, StyleSheet, Switch, Text, useWindowDimensions, View } from 'react-native';
-import { Camera, PhotoFile, Templates, runAtTargetFps, useCameraDevice, useCameraDevices, useCameraFormat, useFrameProcessor, useSkiaFrameProcessor } from 'react-native-vision-camera';
+import { Camera, Orientation, PhotoFile, runAtTargetFps, useCameraDevice, useCameraFormat, useFrameProcessor, useSkiaFrameProcessor } from 'react-native-vision-camera';
 import * as DDN from "vision-camera-dynamsoft-document-normalizer";
-import { Svg, Polygon } from 'react-native-svg';
 import type { DetectedQuadResult } from 'vision-camera-dynamsoft-document-normalizer';
 import { useEffect, useRef, useState } from 'react';
 import { Worklets,useSharedValue } from 'react-native-worklets-core';
 import { intersectionOverUnion, sleep, getRectFromPoints } from '../Utils';
 import { defaultTemplate, whiteTemplate } from '../Templates';
-import { Canvas, Points, vec } from '@shopify/react-native-skia';
+import { PointMode, Skia, SkPoint, vec } from '@shopify/react-native-skia';
 
 export interface ScannerProps{
   onScanned?: (path:PhotoFile|null,isWhiteBackgroundEnabled:boolean,detectionResult:DetectedQuadResult,frameWidth:number,frameHeight:number) => void;
 }
 
-const defaultPoints = [{x:0,y:0},{x:0,y:0},{x:0,y:0},{x:0,y:0}];
-const defaultPointsVec = [vec(defaultPoints[0].x,defaultPoints[0].y),
-vec(defaultPoints[1].x,defaultPoints[1].y),
-vec(defaultPoints[2].x,defaultPoints[2].y),
-vec(defaultPoints[3].x,defaultPoints[3].y),
-vec(defaultPoints[0].x,defaultPoints[0].y)]
-
-
 export default function Scanner(props:ScannerProps) {
-  const windowWidth = useWindowDimensions().width;
-  const windowHeight = useWindowDimensions().height;
   const [isWhiteBackgroundEnabled, setIsWhiteBackgroundEnabled] = useState(false);
   const isWhiteBackgroundEnabledShared = useSharedValue(false);
   const toggleSwitch = () => {
@@ -35,10 +24,11 @@ export default function Scanner(props:ScannerProps) {
   const [isActive,setIsActive] = useState(true);
   const [hasPermission, setHasPermission] = useState(false);
   const [detectionResults,setDetectionResults] = useState([] as DetectedQuadResult[]);
-  const convertAndSetResults = (records:Record<string,DetectedQuadResult>) => {
+  const convertAndSetResults = (records:Record<string,DetectedQuadResult>,orientation:Orientation) => {
     let results:DetectedQuadResult[] = [];
     for (let index = 0; index < Object.keys(records).length; index++) {
       const result = records[Object.keys(records)[index]];
+      rotatePoints(result,frameWidth.value,frameHeight.value,orientation)
       const rect = getRectFromPoints(result.location.points);
       if (rect.width / getFrameSize()[0].value < 0.95) { //avoid full screen misdetection
         results.push(result);
@@ -46,15 +36,27 @@ export default function Scanner(props:ScannerProps) {
     }
     setDetectionResults(results);
   }
+
+  useEffect(() => {
+    checkIfSteady();
+  },[detectionResults]);
+
+  const getFrameSize = () => {
+    let width, height;
+    if (frameWidth>frameHeight && Dimensions.get('window').width>Dimensions.get('window').height){
+      width = frameWidth;
+      height = frameHeight;
+    }else {
+      console.log("Has rotation");
+      width = frameHeight;
+      height = frameWidth;
+    }
+    return [width, height];
+  }
   const convertAndSetResultsJS = Worklets.createRunOnJS(convertAndSetResults);
   const frameWidth = useSharedValue(1920);
   const frameHeight = useSharedValue(1080);
-  const [viewBox,setViewBox] = useState("0 0 1080 1920");
-  const [pointsText, setPointsText] = useState("default");
   const takenShared = useSharedValue(false);
-  const [taken,setTaken] = useState(false);
-  //const points = useSharedValue(defaultPoints);
-  const [polygonPoints, setPolygonPoints] = useState(defaultPointsVec);
   const photo = useRef<PhotoFile|null>(null);
   const previousResults = useRef([] as DetectedQuadResult[]);
   const device = useCameraDevice("back");
@@ -83,105 +85,23 @@ export default function Scanner(props:ScannerProps) {
     updateSettings();
   }, [isWhiteBackgroundEnabled]);
 
-  useEffect(() => {
-    updateViewBox();
-    updatePointsData();
-  }, [detectionResults]);
-
-  const getFrameSize = () => {
-    let width, height;
-    if (frameWidth>frameHeight && Dimensions.get('window').width>Dimensions.get('window').height){
-      width = frameWidth;
-      height = frameHeight;
-    }else {
-      console.log("Has rotation");
-      width = frameHeight;
-      height = frameWidth;
-    }
-    return [width, height];
-  }
-
-  const updateViewBox = () => {
-    const frameSize = getFrameSize();
-    setViewBox("0 0 "+frameSize[0]+" "+frameSize[1]);
-    console.log("viewBox"+viewBox);
-  }
-
-  const updatePointsData = () => {
-    if (detectionResults.length>0) {
-      let result = detectionResults[0];
-      if (result) {
-        let location = result.location;
-        let pointsData = location.points[0].x + "," + location.points[0].y + " ";
-        pointsData = pointsData + location.points[1].x + "," + location.points[1].y +" ";
-        pointsData = pointsData + location.points[2].x + "," + location.points[2].y +" ";
-        pointsData = pointsData + location.points[3].x + "," + location.points[3].y;
-        setPointsText(pointsData);
-        let points = scaledPoints(location.points);
-        console.log("scaledPoints");
-        console.log(points);
-        setPolygonPoints([vec(points[0].x,points[0].y),
-          vec(points[1].x,points[1].y),
-          vec(points[2].x,points[2].y),
-          vec(points[3].x,points[3].y),
-          vec(points[0].x,points[0].y)])
-      }
-      
-    }else{
-      setPointsText("default");
-    }
-  }
-
-  const scaledPoints = (detectedPoints:[DDN.Point,DDN.Point,DDN.Point,DDN.Point]) => {
-    let photoWidth:number = getFrameSize()[0].value;
-    let photoHeight:number = getFrameSize()[1].value;
-    let newPoints = [];
-    let {displayedWidth, displayedHeight} = getDisplayedSize();
-    let widthDiff = (windowWidth - displayedWidth) / 2;
-    let heightDiff = (windowHeight - displayedHeight) / 2;
-    let xRatio = displayedWidth / photoWidth;
-    let yRatio = displayedHeight / photoHeight;
-    for (let index = 0; index < detectedPoints.length; index++) {
-      const point = detectedPoints[index];
-      const x = Math.ceil(point.x * xRatio + widthDiff);
-      const y = Math.ceil(point.y * yRatio + heightDiff);
-      newPoints.push({x:x,y:y});
-    }
-    return newPoints;
-  };
-
-  const getDisplayedSize = () => {
-    let displayedWidth = windowWidth;
-    let displayedHeight = windowHeight;
-    let width = getFrameSize()[0].value;
-    let height = getFrameSize()[1].value;
-    if (height / width > windowHeight / windowWidth) {
-      displayedWidth = width * (windowHeight / height);
-    }else{
-      displayedHeight = height * (windowWidth / width);
-    }
-    return {displayedWidth:displayedWidth,displayedHeight:displayedHeight};
-  };
-  
-  useEffect(() => {
-    if (pointsText != "default") {
-      console.log("pointsText changed");
-      checkIfSteady();
-    }
-  }, [pointsText]);
-
-
   const takePhoto = async () => {
     console.log("take photo");
     if (camera.current) {
       console.log("using camera");
-      setTaken(true);
       takenShared.value = true;
       await sleep(100);
-      photo.current = await camera.current.takePhoto();
+      try{
+        photo.current = await camera.current.takePhoto();
+      }catch(e){
+        console.log(e);
+      }
       if (photo.current) {
         console.log(photo.current);
         setIsActive(false);
+        let detectionResult = JSON.parse(JSON.stringify(detectionResults[0]));
+        previousResults.current = [];
+        setDetectionResults([]);
         if (Platform.OS === "android") {
           if (photo.current.metadata && photo.current.metadata.Orientation === 6) {
             console.log("rotate bitmap for Android");
@@ -193,14 +113,13 @@ export default function Scanner(props:ScannerProps) {
           props.onScanned(
             photo.current,
             isWhiteBackgroundEnabled,
-            detectionResults[0],
+            detectionResult,
             getFrameSize()[0].value,
             getFrameSize()[1].value
           );
         }
       }else{
         Alert.alert("","Failed to take a photo");
-        setTaken(false);
         takenShared.value = false;
       }
     }
@@ -247,25 +166,80 @@ export default function Scanner(props:ScannerProps) {
     return false;
   }
 
-  const frameProcessor = useFrameProcessor((frame) => {
+  const rotatePoints = (result:DetectedQuadResult,_frameWidth:number,frameHeight:number,orientation:Orientation) => {
+   console.log("rotate points");
+    console.log(orientation)
+    for (let index = 0; index < result.location.points.length; index++) {
+      const point = result.location.points[index];
+      if (point) {
+        if (orientation === "landscape-right") {
+          let x = point.x;
+          point.x = frameHeight - point.y;
+          point.y = x;
+        }
+      }
+    }
+    result.location.points = pointsSorted(result.location.points) as [DDN.Point,DDN.Point,DDN.Point,DDN.Point];
+  };
+
+  const pointsSorted = (points:DDN.Point[]):DDN.Point[] => {
+    let size = getFrameSize();
+    let width = size[0];
+    let height = size[1];
+    let centerX = width.value/2;
+    let centerY = height.value/2;
+    let topLeftResult;
+    let topRightResult;
+    let bottomRightResult;
+    let bottomLeftResult;
+    for (let index = 0; index < points.length; index++) {
+      const result = points[index];
+      if (result.x - centerX < 0 && result.y - centerY < 0) {
+        topLeftResult = result;
+      }else if (result.x - centerX > 0 && result.y - centerY < 0) {
+        topRightResult = result;
+      }else if (result.x - centerX > 0 && result.y - centerY > 0) {
+        bottomRightResult = result;
+      }else if (result.x - centerX < 0 && result.y - centerY > 0) {
+        bottomLeftResult = result;
+      }
+    }
+    return [topLeftResult,topRightResult,bottomRightResult,bottomLeftResult] as DDN.Point[];
+  }
+
+  const frameProcessor = useSkiaFrameProcessor((frame) => {
     'worklet'
-    console.log("detect frame");
-    console.log(frame.toString());
+    frame.render();
+    const points:SkPoint[] = [];
     if (takenShared.value === false) {
-      runAtTargetFps(3, () => {
-        'worklet'
         try {
           const results = DDN.detect(frame);
-          console.log(results);
+          if (Object.keys(results).length>0) {
+            console.log(results[0]);
+            for (let index = 0; index < results[0].location.points.length; index++) {
+              const point = results[0].location.points[index];
+              points.push(point);
+            }
+            points.push(results[0].location.points[0]);
+            console.log("draw points");
+            console.log(points);
+          }
           frameWidth.value = frame.width;
           frameHeight.value = frame.height;
-          convertAndSetResultsJS(results);
+          convertAndSetResultsJS(results,frame.orientation);
         } catch (error) {
           console.log(error);
         }
-      })
+    }
+    if (points.length>0) {
+      const paint = Skia.Paint()
+      paint.setColor(Skia.Color('red'))
+      paint.setStrokeWidth(5);
+      frame.drawPoints(PointMode.Polygon,points,paint);
     }
   }, [])
+
+
 
   return (
       <SafeAreaView style={styles.container}>
@@ -280,19 +254,8 @@ export default function Scanner(props:ScannerProps) {
               photo={true}
               format={cameraFormat}
               frameProcessor={frameProcessor}
-              resizeMode='contain'
               pixelFormat='yuv'
             />
-           
-            <Canvas style={{ flex: 1 }}>
-              <Points
-                points={polygonPoints}
-                mode="polygon"
-                color="lightblue"
-                style="fill"
-                strokeWidth={4}
-              />
-            </Canvas>
             <View style={styles.control}>
               <Text>Enable White Background Template:</Text>
               <Switch
