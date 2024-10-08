@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Alert, Dimensions, Platform, SafeAreaView, StyleSheet, Switch, Text, View } from 'react-native';
-import { Camera, PhotoFile, Templates, runAtTargetFps, useCameraDevice, useCameraDevices, useCameraFormat, useFrameProcessor } from 'react-native-vision-camera';
+import { Camera, PhotoFile, Templates, runAtTargetFps, useCameraDevice, useCameraDevices, useCameraFormat, useFrameProcessor, useSkiaFrameProcessor } from 'react-native-vision-camera';
 import * as DDN from "vision-camera-dynamsoft-document-normalizer";
 import { Svg, Polygon } from 'react-native-svg';
 import type { DetectedQuadResult } from 'vision-camera-dynamsoft-document-normalizer';
@@ -194,10 +194,11 @@ export default function Scanner(props:ScannerProps) {
     return false;
   }
 
-  const frameProcessor = useFrameProcessor((frame) => {
+  const frameProcessor = useSkiaFrameProcessor((frame) => {
     'worklet'
     console.log("detect frame");
     console.log(frame.toString());
+    frame.render();
     if (takenShared.value === false) {
       runAtTargetFps(3, () => {
         'worklet'
