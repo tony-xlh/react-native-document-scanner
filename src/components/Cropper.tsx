@@ -11,8 +11,8 @@ export interface CropperProps{
   photo:PhotoFile|undefined;
   isWhiteBackgroundEnabled:boolean;
   liveDetectedQuad:DDN.DetectedQuadResult|undefined;
-  frameWidth:number|undefined;
-  frameHeight:number|undefined;
+  frameWidth:number;
+  frameHeight:number;
   onCanceled?: () => void;
   onConfirmed?: (photoPath:string,points:DDN.Point[]) => void;
 }
@@ -61,14 +61,24 @@ export default function Cropper(props:CropperProps) {
   useEffect(() => {
     if (props.photo) {
       let photo:PhotoFile = props.photo;
-      if (photo.orientation != "portrait") {
-        let tmp = photo.height;
-        photo.height = photo.width;
-        photo.width = tmp;
+      let inconsistentFrameAndPhotoOrientation = false;
+      if (props.frameWidth>props.frameHeight && photo.width<photo.height) {
+        inconsistentFrameAndPhotoOrientation = true;
+      }else if (props.frameWidth<props.frameHeight && photo.width>photo.height) {
+        inconsistentFrameAndPhotoOrientation = true;
+      }
+      if (inconsistentFrameAndPhotoOrientation) {
+        swithWidthAndHeightOfPhoto(photo);
       }
       detectFile(photo.path);
     }
   }, []);
+
+  const swithWidthAndHeightOfPhoto = (photo:PhotoFile) => {
+    let tmp = photo.height;
+    photo.height = photo.width;
+    photo.width = tmp;
+  }
 
   const detectFile = async (path:string) => {
     if (props.frameWidth && props.frameHeight && props.liveDetectedQuad) {
@@ -151,8 +161,12 @@ export default function Cropper(props:CropperProps) {
     let yRatio = displayedHeight / photoHeight;
     for (let index = 0; index < points.value.length; index++) {
       const point = points.value[index];
-      const x = Math.ceil((point.x - widthDiff) / xRatio);
-      const y = Math.ceil((point.y - heightDiff) / yRatio);
+      let x = Math.ceil((point.x - widthDiff) / xRatio);
+      let y = Math.ceil((point.y - heightDiff) / yRatio);
+      x = Math.max(1,x);
+      y = Math.max(1,y);
+      x = Math.min(x,photoWidth-1);
+      y = Math.min(y,photoHeight-1);
       newPoints.push({x:x,y:y});
     }
     return newPoints as [Point,Point,Point,Point];
