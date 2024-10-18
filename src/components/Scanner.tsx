@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Alert, Dimensions, Platform, SafeAreaView, StyleSheet, Switch, Text, View } from 'react-native';
-import { Camera, PhotoFile, Templates, runAtTargetFps, useCameraDevice, useCameraDevices, useCameraFormat, useFrameProcessor, useSkiaFrameProcessor } from 'react-native-vision-camera';
+import { Camera, FormatFilter, PhotoFile, Templates, runAtTargetFps, useCameraDevice, useCameraDevices, useCameraFormat, useFrameProcessor, useSkiaFrameProcessor } from 'react-native-vision-camera';
 import * as DDN from "vision-camera-dynamsoft-document-normalizer";
 import { Svg, Polygon } from 'react-native-svg';
 import type { DetectedQuadResult } from 'vision-camera-dynamsoft-document-normalizer';
@@ -45,12 +45,20 @@ export default function Scanner(props:ScannerProps) {
   const photo = useRef<PhotoFile|null>(null);
   const previousResults = useRef([] as DetectedQuadResult[]);
   const device = useCameraDevice("back");
-  const cameraFormat = useCameraFormat(device, [
-    { videoResolution: { width: 1280, height: 720 } },
-    {photoAspectRatio: 16/9 },
-    {videoAspectRatio: 16/9 },
-    { fps: 60 }
-  ])
+  const getFormatOptions = () => {
+    let options:FormatFilter[] = [
+      { videoResolution: { width: 1280, height: 720 } },
+      {photoAspectRatio: 16/9 },
+      {videoAspectRatio: 16/9 },
+      { fps: 60 }
+    ];
+    if (Platform.OS != "android") {
+      options.unshift({ photoResolution: 'max' });
+    }
+    console.log(options);
+    return options;
+  }
+  const cameraFormat = useCameraFormat(device, getFormatOptions());
   useEffect(() => {
     (async () => {
       const status = await Camera.requestCameraPermission();
