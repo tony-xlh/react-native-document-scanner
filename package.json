@@ -13,6 +13,7 @@
     "@shopify/react-native-skia": "^1.4.2",
     "react": "18.3.1",
     "react-native": "0.75.2",
+    "react-native-gesture-handler": "^2.20.0",
     "react-native-reanimated": "^3.15.4",
     "react-native-share": "^11.0.1",
     "react-native-simple-radio-button": "^2.7.4",

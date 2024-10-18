@@ -197,7 +197,8 @@ export default function Scanner(props:ScannerProps) {
   const frameProcessor = useSkiaFrameProcessor((frame) => {
     'worklet'
     console.log("detect frame");
-    console.log(frame.toString());
+    console.log(frame.width);
+    console.log(frame.height);
     frame.render();
     if (takenShared.value === false) {
       runAtTargetFps(3, () => {
