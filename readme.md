@@ -4,7 +4,7 @@ React Native Document Scanner using Vision Camera and the [Dynamsoft Document No
 
 [Demo video](https://user-images.githubusercontent.com/5462205/200720562-a7b91e06-cf6c-4235-a8cd-ef200012a42a.MP4)
 
-Please note that the demo only supports the portait orientation.
+Please note that the demo only supports the portrait orientation.
 
 ### How to run
 
