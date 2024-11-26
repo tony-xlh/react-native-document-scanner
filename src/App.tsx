@@ -69,8 +69,8 @@ export default function App() {
           photo={photoTaken}
           isWhiteBackgroundEnabled={isWhiteBackgroundEnabled}
           liveDetectedQuad={detectedQuad}
-          frameWidth={frameWidth}
-          frameHeight={frameHeight}
+          frameWidth={frameWidth!}
+          frameHeight={frameHeight!}
           onCanceled={()=>{
             setShowCropper(false);
             setShowScanner(true);
