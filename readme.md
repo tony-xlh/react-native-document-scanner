@@ -15,3 +15,9 @@ Please note that the demo only supports the portrait orientation.
 ### Blog
 
 [Build a React Native Document Scanner](https://www.dynamsoft.com/codepool/react-native-document-scanner.html)
+
+### Detect the Document in Images
+
+If you need to detect the document in existing images, check out this demo: https://github.com/tony-xlh/react-native-image-cropper
+
+
