@@ -6,6 +6,8 @@ React Native Document Scanner using Vision Camera and the [Dynamsoft Document No
 
 Please note that the demo only supports the portrait orientation.
 
+If you do not want to use Vision Camera, you can use the [offical React Native package](https://github.com/Dynamsoft/capture-vision-react-native-samples) by Dynamsoft.
+
 ### How to run
 
 1. npm install
